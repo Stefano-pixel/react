@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Table from './Table';
-const search = document.querySelector('input')
-const universityForm = document.querySelector('form')
+import Page from './Page';
 
 const root = ReactDOM.createRoot(document.getElementById('table'));
 
-root.render(<Table />);
+//-----------------
+console.log('run index.js ' + Math.random())
+root.render(<Page />);
 
 
 
