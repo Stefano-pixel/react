@@ -29,7 +29,7 @@ const FormUniveristy = (props) =>{
           console.log(univeristy)
           setEnteredTitle('');
           setEnteredUniversity('');
-          props.onSetNameUniversity(enteredName);
+          props.onSetUniversityInformation(enteredName, enteredUniversity)
     }
 
     return <form onSubmit={submitHandler}>
@@ -52,7 +52,6 @@ const FormUniveristy = (props) =>{
             </div>
         </div>
         <button type="submit">Add Univeristy</button>
-        <Table></Table>
     </form>
 }
 

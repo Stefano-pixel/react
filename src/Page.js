@@ -1,23 +1,22 @@
+import React, {useState} from 'react';
+import Table from './components/Table'
 import FormUniveristy from './components/FormUniversity';
 
-import React, { useState } from 'react';
 function Page() {
 
-    const arryaName = useState('')
-    const nameArray = arryaName[0]
-    const setName = arryaName[1]
+  const [arrayUni, setArray] = useState([])                              
 
-  var nameUniveristy = ''
-  const setNameUniversity= (name)=>{
-    console.log('name ----- '+nameUniveristy)
-    console.log(this)
-    setName(name)
+  const setUniversityInformation = (array) => {
+    setArray(array)
   }
+
+  console.log(arrayUni)
 
   return (
     <div>
-      <h1>University name: {nameArray}</h1>
-      <FormUniveristy onSetNameUniversity = {setNameUniversity}/> 
+      <h1>Univeristy manager</h1>
+      <FormUniveristy onSetUniversityInformation = {setUniversityInformation}/> 
+      <Table items = {arrayUni}/>
     </div>
   );
 }
