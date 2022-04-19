@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Table from './Table'
 
-const FormUniveristy = () =>{
+const FormUniveristy = (props) =>{
 
     const arrayNameUniversity = useState('')
     const enteredName = arrayNameUniversity[0];
@@ -27,6 +27,9 @@ const FormUniveristy = () =>{
           }
 
           console.log(univeristy)
+          setEnteredTitle('');
+          setEnteredUniversity('');
+          props.onSetNameUniversity(enteredName);
     }
 
     return <form onSubmit={submitHandler}>
