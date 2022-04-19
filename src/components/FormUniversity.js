@@ -33,11 +33,19 @@ const FormUniveristy = () =>{
         <div>
             <div>
                 <label>Name</label>
-                <input type='text' onChange={nameChangeHandler} />
+                <input 
+                     type='text' 
+                     value={enteredName}
+                     onChange={nameChangeHandler} 
+                     />
             </div>
             <div>
                 <label>Nation</label>
-                <input type='text' onChange={universityChangeHandler}/>
+                <input 
+                     type='text' 
+                     value={enteredUniversity}
+                     onChange={universityChangeHandler}
+                     />
             </div>
         </div>
         <button type="submit">Add Univeristy</button>
