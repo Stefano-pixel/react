@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import Table from './Table'
 
 const FormUniveristy = (props) =>{
 
@@ -19,17 +18,19 @@ const FormUniveristy = (props) =>{
             setEnteredUniversity(event.target.value);
     }
 
+    const removeUniversity = ()=>{
+        props.onRemoveUniversity(enteredName);
+    }
+
+    const addUniversity = ()=>{
+        props.onAddUniversity({name: enteredName, nation: enteredUniversity})
+    }
+
     const submitHandler = (event) =>{
         event.preventDefault();
-          const univeristy = {
-              name: enteredName,
-              nation: enteredUniversity
-          }
 
-          console.log(univeristy)
           setEnteredTitle('');
           setEnteredUniversity('');
-          props.onSetUniversityInformation(enteredName, enteredUniversity)
     }
 
     return <form onSubmit={submitHandler}>
@@ -51,7 +52,8 @@ const FormUniveristy = (props) =>{
                      />
             </div>
         </div>
-        <button type="submit">Add Univeristy</button>
+        <button onClick={removeUniversity}>Remove University</button>
+        <button onClick={addUniversity}>Add Univeristy</button>
     </form>
 }
 

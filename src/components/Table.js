@@ -1,7 +1,4 @@
-import Row from './Row'
-
 function Table(props){  
-
     return (<table>
             <tr>
                <th>Name</th>
