@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 const FormUniveristy = (props) =>{
 
@@ -15,7 +15,7 @@ const FormUniveristy = (props) =>{
     }
 
     const universityChangeHandler = (event) => {
-            setEnteredUniversity(event.target.value);
+            setEnteredUniversity(event.target.value);     
     }
 
     const removeUniversity = ()=>{
@@ -32,6 +32,10 @@ const FormUniveristy = (props) =>{
           setEnteredTitle('');
           setEnteredUniversity('');
     }
+
+    useEffect(()=>{
+        
+    },[])
 
     return <form onSubmit={submitHandler}>
         <div>

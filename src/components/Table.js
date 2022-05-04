@@ -8,7 +8,7 @@ function Table(props){
                 props.items.map((uni) => (
                  <tr>
                     <td>{uni.name}</td>
-                    <td>{uni.nation}</td>
+                    <td>{uni.country}</td>
                  </tr>
                 ))
             }
