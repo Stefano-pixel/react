@@ -1,0 +1,17 @@
+[
+    {
+    "id": 1,
+    "name": "UNI1",
+    "country": "Italy"
+    },
+    {
+    "id": 2,
+    "name": "UNI2",
+    "country": "Germany"
+    },
+    {
+    "id": 3,
+    "name": "UNI3",
+    "country": "America"
+    }
+  ]
