@@ -5,23 +5,32 @@ import data from "./mock-data.json";
 import ReadOnlyRow from "./components/ReadOnlyRow";
 import EditableRow from "./components/EditableRow";
 import viewUni from "./viewUniversities";
-import {getUniversitiesToDelete} from './universitiesFilter';
+import {getUniToAddDeleteUpdate} from './universitiesFilter';
 
 const App = () => {
   const URL_BE = 'http://localhost:3001/university';
 
   const [universities, setuniversities] = useState([]);
-  const [universitiesBeforeSave, setUniversitiesBeforeSave] = useState([]);
-  const [universitiesToSave, setUniversitiesToSave] = useState([]);
-  const [universitiesToUpdate, setUniversitiesToUpdate] = useState([]);
-  const [universitiesToDelete, setUniversitiesToDelete] = useState([]);
+  
+  // const universitiesToSave = useRef([]);
+  // const [universitiesToUpdate, setUniversitiesToUpdate] = useState([]);
+  // const [universitiesToDelete, setUniversitiesToDelete] = useState([]);
+  const universitiesBeforeSave = useRef([]);
+  const uniToPostDeleteUpdate = useRef({
+                                        post: [],
+                                        delete: [],
+                                        update: []
+                                       })
 
+  const [triggerSave, setTriggerSave] = useState(0)
   const [addFormData, setAddFormData] = useState({
+    id: "",
     name: "",
     country: "",
   });
 
   const [editFormData, setEditFormData] = useState({
+    id: "",
     name: "",
     country: "",
   });
@@ -34,8 +43,10 @@ const App = () => {
     fetch(URL_BE, { method: 'GET' })
       .then(response => response.json())
       .then(data => {
+        console.log('---------')
+        console.log(data)
         setuniversities(data);
-        setUniversitiesBeforeSave([...data]);
+        universitiesBeforeSave.current = [...data];
       });
   }, [])
 
@@ -43,35 +54,67 @@ const App = () => {
     //If this useEffect is executed for the first time then don't call the 
     // function "fetch"
     if (isMounted.current) {
-
-      if (universitiesToSave.length > 0) {
+      if(uniToPostDeleteUpdate.current.post.length > 0){ 
+      console.log('POST----------')
         fetch(URL_BE, {
           method: 'POST',
-          body: JSON.stringify(universitiesToSave),
+          body: JSON.stringify(uniToPostDeleteUpdate.current.post),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           }
         })
-          .then(response => {
-            response.json();
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      }
-      if (universitiesToDelete.length > 0) {
-
+        .then(response => {
+          response.json()
+          uniToPostDeleteUpdate.current.post = [];
+        })
+        .catch( (e) => {
+           console.log(e)
+        })
       }
 
-      if (universitiesToUpdate.length > 0) {
+      if(uniToPostDeleteUpdate.current.delete.length > 0){
+        console.log('DELETE----------')
+        fetch(URL_BE, {
+          method: 'DELETE',
+          body: JSON.stringify(uniToPostDeleteUpdate.current.delete),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          response.json()
+          uniToPostDeleteUpdate.current.delete = [];
+        })
+        .catch( (e) => {
+          console.log(e)
+       })
+      }
 
+      if(uniToPostDeleteUpdate.current.update.length > 0){
+        console.log('UPDATE----------')
+        fetch(URL_BE, {
+          method: 'PATCH',
+          body: JSON.stringify(uniToPostDeleteUpdate.current.update),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          response.json()
+          uniToPostDeleteUpdate.current.update = [];
+        })
+        .catch( (e) => {
+          console.log(e)
+       })
       }
 
     } else {
       isMounted.current = true;
     }
-  }, [universitiesToSave])
+  }, [triggerSave])
 
   const handleAddFormChange = (event) => {
     event.preventDefault();
@@ -114,7 +157,7 @@ const App = () => {
     event.preventDefault();
 
     const editedContact = {
-      id: editContactId,
+      id: editFormData.id,
       name: editFormData.name,
       country: editFormData.country,
     };
@@ -134,6 +177,7 @@ const App = () => {
     setEditContactId(contact.id);
 
     const formValues = {
+      id: contact.id,
       name: contact.name,
       country: contact.country,
     };
@@ -145,9 +189,9 @@ const App = () => {
     setEditContactId(null);
   };
 
-  const handleDeleteClick = (contactId) => {
+  const handleDeleteClick = (universityId) => {
     const newuniversities = [...universities];
-    const index = universities.findIndex((contact) => contact.id === contactId);
+    const index = universities.findIndex((university) => university.id === universityId);
     newuniversities.splice(index, 1);
     setuniversities(newuniversities);
   };
@@ -155,15 +199,14 @@ const App = () => {
   //Handle the behavior of the save button 
   const handleSaveUniversities = () => {
     console.log('handleSaveUniversities')
-    var newUniversity = [...universities].splice(universitiesBeforeSave.length, universities.length);   
-    
-    setUniversitiesToSave(newUniversity);
-    // const difference = universitiesFilter.getUniversitiesToDelete(universitiesBeforeSave, universities);
-    getUniversitiesToDelete(universitiesBeforeSave, universities);
-    // viewUni(difference);
-    // setUniversitiesToDelete(difference)
-
-    setUniversitiesBeforeSave([...universities])
+    getUniToAddDeleteUpdate(universitiesBeforeSave.current, universities, uniToPostDeleteUpdate.current);
+    universitiesBeforeSave.current = universities
+  
+    if(uniToPostDeleteUpdate.current.post.length > 0 || 
+       uniToPostDeleteUpdate.current.delete.length > 0 || 
+       uniToPostDeleteUpdate.current.update.length > 0){
+       setTriggerSave(nanoid());
+    }
   }
 
   return (
