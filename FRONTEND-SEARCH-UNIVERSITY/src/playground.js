@@ -1,11 +1,39 @@
-const arr = [4, 3, 5, 7, 9];
-var i = 0;
-for(const a of arr){
-    console.log(a)
-    if (i == 2) {arr.splice(i,1);
-                 break;}  
-    i++;
-}
-console.log(arr)
+import {createRequire} from 'module';
+const require = createRequire(import.meta.url)
+import fetch from "node-fetch";
+const GlobalVariables =  require('./GlobalVariables.js');
 
-console.log("cazzo" != "cazzo")
+class ProvaClass {
+    metodo1(){
+    fetch(GlobalVariables.URL_BE + '/' + GlobalVariables.USER_RESOURCE + '/' + 'login', { 
+        method: 'POST',
+        body: JSON.stringify(this.userPass),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        } 
+      })
+      .then(
+        this.metodo2.bind(this),
+        function fun1(){
+
+        }
+      );
+      console.log('metodo1')
+    }
+
+    metodo2(){
+        this.metodo3()
+        console.log('metodo2')
+    }
+
+    metodo3(){
+        console.log('metodo3')
+    }
+}
+
+var objProvaClass = new ProvaClass();
+
+objProvaClass.metodo1();
+
+
