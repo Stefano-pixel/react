@@ -1,10 +1,12 @@
 import React from "react";
 import loginImg from "../../login.svg";
+import Context from '../../../Context'
 import { Redirect } from 'react-router-dom';
 
 const GlobalVariables =  require('../../../GlobalVariables');
 
 export class Login extends React.Component {
+  static contextType = Context;
 
   constructor(props) {
     super(props);
@@ -13,6 +15,10 @@ export class Login extends React.Component {
       user : '',
       password : ''
     }   
+  }
+
+  componentDidMount(){
+    this.context.user = ''
   }
   
   updateUsernameValue = (event) => {
@@ -23,35 +29,6 @@ export class Login extends React.Component {
   updatePasswordValue = (event) => {
     const val = event.target.value;
     this.userPass.password = val;
-  }
-
-
-  componentDidUpdate = (prevProps, prevState) => {
-    console.log('update-----------------')
-
-    if(prevState.isLogin !== this.state.isLogin){
-      // fetch(GlobalVariables.URL_BE + '/' + GlobalVariables.USER_RESOURCE + '/' + 'login', { 
-      //   method: 'POST',
-      //   body: JSON.stringify(this.userPass),
-      //   headers: {
-      //     'Accept': 'application/json',
-      //     'Content-Type': 'application/json'
-      //   } 
-      // })
-      // .then(response => response.json())
-      // .then(function(data) {
-      //   if(data){
-      //      alert('user exists')
-      //      this.setState((currentState)=>{
-      //       return {isLogin:!currentState.isLogin};
-      //      });
-      //   }
-      //   else {
-      //      alert('user doesn exists')
-      //      GlobalVariables.isLoginSuccess = false;
-      //   }
-      // });
-    }
   }
 
   handleOnClick = () =>{
@@ -70,19 +47,23 @@ export class Login extends React.Component {
   loginTheUserIfExists(isUserInDb){
     if(isUserInDb){
       alert('user exists')
-      GlobalVariables.isLoginSuccess = true;
+      console.log('lll ' + this.context.user)
+      this.context.user = this.userPass.user;
+      console.log('lll ' + this.context.user)
       this.setState((currentState)=>{
        return {isLogin:!currentState.isLogin};
       });
    }else {
+      this.context.user = '';
       alert('user doesn exists')
-      GlobalVariables.isLoginSuccess = false;
    }
   }
 
   render() {
+    console.log(this.context.user !== '')
+    console.log(this.context.user)
     return (
-      GlobalVariables.isLoginSuccess?
+      this.context.user !== ''?
       <Redirect to='/universities'/>
       :
       <div className="base-container" ref={this.props.containerRef}>

@@ -1,4 +1,5 @@
 import {BrowserRouter as Router, Route, Switch, withRouter} from 'react-router-dom'
+import UsersContext from './Context.js';
 import Login from './login/LoginUni.jsx'
 import UniversitiesManager from './universities manager/UniversitiesManager.js';
 
@@ -6,10 +7,12 @@ function App(){
     return (
         <Router>
             <Switch>
-                <Route path="/login">
-                  <Login/>
-                </Route>
-                <Route exact path="/universities" component={UniversitiesManager}/>
+                <UsersContext.Provider value = {{user: ''}}>
+                    <Route path="/login">
+                    <Login/>
+                    </Route>
+                    <Route exact path="/universities" component={UniversitiesManager}/>
+                </UsersContext.Provider>
             </Switch>
         </Router>
     )

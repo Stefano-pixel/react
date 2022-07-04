@@ -1,13 +1,18 @@
-import React, { useState, useEffect, useRef, Fragment } from "react";
+import React, { useState, useEffect, useRef, useContext, Fragment } from "react";
 import { nanoid } from "nanoid";
 import "./UniversitiesManager.css";
 import ReadOnlyRow from "./components/ReadOnlyRow";
 import EditableRow from "./components/EditableRow";
 import {getUniToAddDeleteUpdate} from './universitiesFilter';
 import {Redirect} from "react-router-dom";
+import Context from '../Context.js';
 const GlobalVariables = require('../GlobalVariables.js');
 
 const UniversitiesManager = () => {
+  const context = useContext(Context)
+  console.log('context')
+  console.log(context.user)
+
   const [universities, setuniversities] = useState([]);
 
   const universitiesBeforeSave = useRef([]);
@@ -22,12 +27,14 @@ const UniversitiesManager = () => {
     id: "",
     name: "",
     country: "",
+    user: "",
   });
 
   const [editFormData, setEditFormData] = useState({
     id: "",
     name: "",
     country: "",
+    user: "",
   });
 
   const [editContactId, setEditContactId] = useState(null);
@@ -134,13 +141,14 @@ const UniversitiesManager = () => {
   const handleAddFormSubmit = (event) => {
     event.preventDefault();
 
-    const newContact = {
+    const newUniversity = {
       id: nanoid(),
       name: addFormData.name,
       country: addFormData.country,
+      user: context.user
     };
 
-    const newuniversities = [...universities, newContact];
+    const newuniversities = [...universities, newUniversity];
     setuniversities(newuniversities);
   };
 
@@ -151,6 +159,7 @@ const UniversitiesManager = () => {
       id: editFormData.id,
       name: editFormData.name,
       country: editFormData.country,
+      user: context.user
     };
 
     const newuniversities = [...universities];
@@ -171,6 +180,7 @@ const UniversitiesManager = () => {
       id: contact.id,
       name: contact.name,
       country: contact.country,
+      user: context.user
     };
 
     setEditFormData(formValues);
@@ -200,7 +210,7 @@ const UniversitiesManager = () => {
   }
 
   return (
-      GlobalVariables.isLoginSuccess?
+      context.user !== ''?
       <div className="app-container">
         <form onSubmit={handleEditFormSubmit}>
           <table>
