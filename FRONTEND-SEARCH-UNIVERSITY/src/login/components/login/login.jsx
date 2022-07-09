@@ -44,24 +44,21 @@ export class Login extends React.Component {
       .then(this.loginTheUserIfExists.bind(this));
   }
 
-  loginTheUserIfExists(isUserInDb){
-    if(isUserInDb){
+  loginTheUserIfExists(userObj){
+    if(userObj){
       alert('user exists')
-      console.log('lll ' + this.context.user)
-      this.context.user = this.userPass.user;
-      console.log('lll ' + this.context.user)
+      this.context.user = userObj.user;
+      this.context.id = userObj._id;
       this.setState((currentState)=>{
        return {isLogin:!currentState.isLogin};
       });
    }else {
       this.context.user = '';
-      alert('user doesn exists')
+      alert('user does not exist')
    }
   }
 
   render() {
-    console.log(this.context.user !== '')
-    console.log(this.context.user)
     return (
       this.context.user !== ''?
       <Redirect to='/universities'/>

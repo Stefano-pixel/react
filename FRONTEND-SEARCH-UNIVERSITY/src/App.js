@@ -7,7 +7,7 @@ function App(){
     return (
         <Router>
             <Switch>
-                <UsersContext.Provider value = {{user: ''}}>
+                <UsersContext.Provider value = {{user: '', id: ''}}>
                     <Route path="/login">
                     <Login/>
                     </Route>

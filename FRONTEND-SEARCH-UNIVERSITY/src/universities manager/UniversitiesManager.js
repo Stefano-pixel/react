@@ -10,8 +10,6 @@ const GlobalVariables = require('../GlobalVariables.js');
 
 const UniversitiesManager = () => {
   const context = useContext(Context)
-  console.log('context')
-  console.log(context.user)
 
   const [universities, setuniversities] = useState([]);
 
@@ -42,7 +40,7 @@ const UniversitiesManager = () => {
   const isMounted = useRef(false)
 
   useEffect(() => {
-    fetch(GlobalVariables.URL_BE + GlobalVariables.UNIVERSITY_RESOURCE, { method: 'GET' })
+    fetch(GlobalVariables.URL_BE + GlobalVariables.UNIVERSITY_RESOURCE + (context.id !== ''?'/?user=' + context.id:''), { method: 'GET' })
       .then(response => response.json())
       .then(data => {
         setuniversities(data);
@@ -69,7 +67,7 @@ const UniversitiesManager = () => {
           uniToPostDeleteUpdate.current.post = [];
         })
         .catch( (e) => {
-           console.log(e)
+           console.error(e)
         })
       }
 
@@ -87,7 +85,7 @@ const UniversitiesManager = () => {
           uniToPostDeleteUpdate.current.delete = [];
         })
         .catch( (e) => {
-          console.log(e)
+          console.error(e)
        })
       }
 
@@ -105,7 +103,7 @@ const UniversitiesManager = () => {
           uniToPostDeleteUpdate.current.update = [];
         })
         .catch( (e) => {
-          console.log(e)
+          console.error(e)
        })
       }
 
@@ -145,7 +143,7 @@ const UniversitiesManager = () => {
       id: nanoid(),
       name: addFormData.name,
       country: addFormData.country,
-      user: context.user
+      user: context.id
     };
 
     const newuniversities = [...universities, newUniversity];
@@ -159,7 +157,7 @@ const UniversitiesManager = () => {
       id: editFormData.id,
       name: editFormData.name,
       country: editFormData.country,
-      user: context.user
+      user: context.id
     };
 
     const newuniversities = [...universities];
@@ -180,7 +178,7 @@ const UniversitiesManager = () => {
       id: contact.id,
       name: contact.name,
       country: contact.country,
-      user: context.user
+      user: context.id
     };
 
     setEditFormData(formValues);
@@ -210,7 +208,7 @@ const UniversitiesManager = () => {
   }
 
   return (
-      context.user !== ''?
+      context.id !== ''?
       <div className="app-container">
         <form onSubmit={handleEditFormSubmit}>
           <table>
