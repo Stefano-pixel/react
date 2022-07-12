@@ -47,8 +47,8 @@ export class Login extends React.Component {
   loginTheUserIfExists(userObj){
     if(userObj){
       alert('user exists')
-      this.context.user = userObj.user;
-      this.context.id = userObj._id;
+      this.context.id = userObj.id;
+      this.context.userToken = userObj.token;
       this.setState((currentState)=>{
        return {isLogin:!currentState.isLogin};
       });
@@ -60,7 +60,7 @@ export class Login extends React.Component {
 
   render() {
     return (
-      this.context.user !== ''?
+      this.context.userToken !== ''?
       <Redirect to='/universities'/>
       :
       <div className="base-container" ref={this.props.containerRef}>

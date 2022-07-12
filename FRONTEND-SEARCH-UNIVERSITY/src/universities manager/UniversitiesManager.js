@@ -6,6 +6,7 @@ import EditableRow from "./components/EditableRow";
 import {getUniToAddDeleteUpdate} from './universitiesFilter';
 import {Redirect} from "react-router-dom";
 import Context from '../Context.js';
+
 const GlobalVariables = require('../GlobalVariables.js');
 
 const UniversitiesManager = () => {
@@ -40,12 +41,29 @@ const UniversitiesManager = () => {
   const isMounted = useRef(false)
 
   useEffect(() => {
-    fetch(GlobalVariables.URL_BE + GlobalVariables.UNIVERSITY_RESOURCE + (context.id !== ''?'/?user=' + context.id:''), { method: 'GET' })
-      .then(response => response.json())
-      .then(data => {
-        setuniversities(data);
-        universitiesBeforeSave.current = [...data];
-      });
+    fetch(GlobalVariables.URL_BE + GlobalVariables.UNIVERSITY_RESOURCE + (context.id !== ''?'/?user=' + context.id:''), 
+      { 
+        method: 'GET',
+        headers: new Headers({
+                              Authorization: "Bearer " + context.userToken
+                             })
+      })
+      .then(response => ({status: response.status, json: response.json()}))
+      .then((response) => {
+        if(response.status >= 200 && response.status < 300){
+             return response.json
+        }
+        return null
+      })
+      .then((responseJson) => {
+        if(responseJson !== null){
+          setuniversities(responseJson);
+          console.log(responseJson)
+          universitiesBeforeSave.current = [...responseJson];
+        }else{
+          console.error('Something went wrong')
+        }
+      })
   }, [])
 
   //If this useEffect is executed for the first time then don't call the 
@@ -57,18 +75,18 @@ const UniversitiesManager = () => {
         fetch(GlobalVariables.URL_BE + GlobalVariables.UNIVERSITY_RESOURCE, {
           method: 'POST',
           body: JSON.stringify(uniToPostDeleteUpdate.current.post),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => {
-          response.json()
-          uniToPostDeleteUpdate.current.post = [];
-        })
-        .catch( (e) => {
-           console.error(e)
-        })
+          headers: new Headers({
+                                Authorization: "Bearer " + context.userToken,
+                                Accept: 'application/json',
+                              })
+          })
+          .then(response => {
+            response.json()
+            uniToPostDeleteUpdate.current.post = [];
+          })
+          .catch( (e) => {
+            console.error(e)
+          })
       }
 
       if(uniToPostDeleteUpdate.current.delete.length > 0){
@@ -203,12 +221,12 @@ const UniversitiesManager = () => {
     if(uniToPostDeleteUpdate.current.post.length > 0 || 
        uniToPostDeleteUpdate.current.delete.length > 0 || 
        uniToPostDeleteUpdate.current.update.length > 0){
-       setTriggerSave(nanoid());
+       setTriggerSave(nanoid);
     }
   }
 
   return (
-      context.id !== ''?
+      context.userToken!== ''?
       <div className="app-container">
         <form onSubmit={handleEditFormSubmit}>
           <table>
