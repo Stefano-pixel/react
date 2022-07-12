@@ -22,6 +22,7 @@ const UniversitiesManager = () => {
                                        })
 
   const [triggerSave, setTriggerSave] = useState(0)
+  const [triggerLogin, setTriggerLogin] = useState(0)
   const [addFormData, setAddFormData] = useState({
     id: "",
     name: "",
@@ -130,6 +131,24 @@ const UniversitiesManager = () => {
     }
   }, [triggerSave])
 
+  useEffect(()=>{
+     fetch(GlobalVariables.URL_BE + GlobalVariables.USER_RESOURCE + '/logout', {
+      method: 'POST',
+      headers: new Headers({
+        Authorization: "Bearer " + context.userToken,
+        Accept: 'application/json',
+       })
+     })
+     .then((response) => {
+        if(response.status >= 200 && response.status < 300){
+          context.id = '';
+          context.userToken = '';
+        }else{
+          console.log('errore stato ' + response.status)
+        }
+     })
+  },[triggerLogin])
+
   const handleAddFormChange = (event) => {
     event.preventDefault();
 
@@ -225,9 +244,15 @@ const UniversitiesManager = () => {
     }
   }
 
+  const handleLogOutUniversities = () => {
+      console.log('handle login')
+      setTriggerLogin(nanoid)
+  }
+
   return (
       context.userToken!== ''?
       <div className="app-container">
+        <button onClick={handleLogOutUniversities}>Log out</button>
         <form onSubmit={handleEditFormSubmit}>
           <table>
             <thead>
