@@ -1,12 +1,12 @@
 import React from "react";
 import loginImg from "../../login.svg";
-import Context from '../../../Context'
+import UserContext from '../../../UserContext'
 import { Redirect } from 'react-router-dom';
 
 const GlobalVariables =  require('../../../GlobalVariables');
 
 export class Login extends React.Component {
-  static contextType = Context;
+  static contextType = UserContext;
 
   constructor(props) {
     super(props);
@@ -15,10 +15,6 @@ export class Login extends React.Component {
       user : '',
       password : ''
     }   
-  }
-
-  componentDidMount(){
-    this.context.user = ''
   }
   
   updateUsernameValue = (event) => {
@@ -47,20 +43,21 @@ export class Login extends React.Component {
   loginTheUserIfExists(userObj){
     if(userObj){
       alert('user exists')
-      this.context.id = userObj.id;
-      this.context.userToken = userObj.token;
+      localStorage.setItem("id", userObj.id)
+      localStorage.setItem("userToken", userObj.token)
       this.setState((currentState)=>{
        return {isLogin:!currentState.isLogin};
       });
    }else {
-      this.context.user = '';
       alert('user does not exist')
    }
   }
 
   render() {
     return (
-      this.context.userToken !== ''?
+     (localStorage.getItem("userToken") !== null
+      && localStorage.getItem("userToken") !== 'undefined'  
+      && localStorage.getItem("userToken") !== '')?
       <Redirect to='/universities'/>
       :
       <div className="base-container" ref={this.props.containerRef}>

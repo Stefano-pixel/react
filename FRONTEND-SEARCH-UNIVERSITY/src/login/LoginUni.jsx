@@ -37,7 +37,7 @@ class LoginUni extends React.Component {
         <div className="login">
           <div className="container" ref={ref => (this.container = ref)}>
             {isLogginActive && (
-              <Login containerRef={ref => (this.current = ref)} />
+              <Login containerRef={ref => (this.current = ref)}/>
             )}
             {!isLogginActive && (
               <Register containerRef={ref => (this.current = ref)} />

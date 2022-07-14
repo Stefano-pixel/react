@@ -1,8 +1,8 @@
 import React from 'react';
 
 const UsersContext = React.createContext({
-  user: '',
-  objectId: ''
+  id: '',
+  userToken: ''
 });
 
 export default UsersContext;

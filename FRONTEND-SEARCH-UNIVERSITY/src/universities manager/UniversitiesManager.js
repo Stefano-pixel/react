@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useRef, useContext, Fragment } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
+import {Redirect} from "react-router-dom";
 import { nanoid } from "nanoid";
-import "./UniversitiesManager.css";
 import ReadOnlyRow from "./components/ReadOnlyRow";
 import EditableRow from "./components/EditableRow";
 import {getUniToAddDeleteUpdate} from './universitiesFilter';
-import {Redirect} from "react-router-dom";
-import Context from '../Context.js';
+import "./UniversitiesManager.css";
 
 const GlobalVariables = require('../GlobalVariables.js');
 
 const UniversitiesManager = () => {
-  const context = useContext(Context)
 
   const [universities, setuniversities] = useState([]);
 
@@ -42,11 +40,11 @@ const UniversitiesManager = () => {
   const isMounted = useRef(false)
 
   useEffect(() => {
-    fetch(GlobalVariables.URL_BE + GlobalVariables.UNIVERSITY_RESOURCE + (context.id !== ''?'/?user=' + context.id:''), 
+    fetch(GlobalVariables.URL_BE + GlobalVariables.UNIVERSITY_RESOURCE + (localStorage.getItem("id") !== ''?'/?user=' + localStorage.getItem("id"):''), 
       { 
         method: 'GET',
         headers: new Headers({
-                              Authorization: "Bearer " + context.userToken
+                              Authorization: "Bearer " + localStorage.getItem("userToken")
                              })
       })
       .then(response => ({status: response.status, json: response.json()}))
@@ -59,7 +57,6 @@ const UniversitiesManager = () => {
       .then((responseJson) => {
         if(responseJson !== null){
           setuniversities(responseJson);
-          console.log(responseJson)
           universitiesBeforeSave.current = [...responseJson];
         }else{
           console.error('Something went wrong')
@@ -72,12 +69,11 @@ const UniversitiesManager = () => {
   useEffect(() => {
     if (isMounted.current) {
       if(uniToPostDeleteUpdate.current.post.length > 0){ 
-      console.log('POST----------')
         fetch(GlobalVariables.URL_BE + GlobalVariables.UNIVERSITY_RESOURCE, {
           method: 'POST',
           body: JSON.stringify(uniToPostDeleteUpdate.current.post),
           headers: new Headers({
-                                Authorization: "Bearer " + context.userToken,
+                                Authorization: "Bearer " + localStorage.getItem("userToken"),
                                 Accept: 'application/json',
                               })
           })
@@ -85,19 +81,18 @@ const UniversitiesManager = () => {
             response.json()
             uniToPostDeleteUpdate.current.post = [];
           })
-          .catch( (e) => {
+          .catch((e) => {
             console.error(e)
           })
       }
-
       if(uniToPostDeleteUpdate.current.delete.length > 0){
         fetch(GlobalVariables.URL_BE + GlobalVariables.UNIVERSITY_RESOURCE, {
           method: 'DELETE',
           body: JSON.stringify(uniToPostDeleteUpdate.current.delete),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("userToken"),
+            Accept: 'application/json',
+          })
         })
         .then(response => {
           response.json()
@@ -112,10 +107,10 @@ const UniversitiesManager = () => {
         fetch(GlobalVariables.URL_BE + GlobalVariables.UNIVERSITY_RESOURCE, {
           method: 'PATCH',
           body: JSON.stringify(uniToPostDeleteUpdate.current.update),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("userToken"),
+            Accept: 'application/json',
+          })
         })
         .then(response => {
           response.json()
@@ -130,24 +125,6 @@ const UniversitiesManager = () => {
       isMounted.current = true;
     }
   }, [triggerSave])
-
-  useEffect(()=>{
-     fetch(GlobalVariables.URL_BE + GlobalVariables.USER_RESOURCE + '/logout', {
-      method: 'POST',
-      headers: new Headers({
-        Authorization: "Bearer " + context.userToken,
-        Accept: 'application/json',
-       })
-     })
-     .then((response) => {
-        if(response.status >= 200 && response.status < 300){
-          context.id = '';
-          context.userToken = '';
-        }else{
-          console.log('errore stato ' + response.status)
-        }
-     })
-  },[triggerLogin])
 
   const handleAddFormChange = (event) => {
     event.preventDefault();
@@ -180,7 +157,7 @@ const UniversitiesManager = () => {
       id: nanoid(),
       name: addFormData.name,
       country: addFormData.country,
-      user: context.id
+      user: localStorage.getItem("id")
     };
 
     const newuniversities = [...universities, newUniversity];
@@ -194,7 +171,7 @@ const UniversitiesManager = () => {
       id: editFormData.id,
       name: editFormData.name,
       country: editFormData.country,
-      user: context.id
+      user: localStorage.getItem("id")
     };
 
     const newuniversities = [...universities];
@@ -215,7 +192,7 @@ const UniversitiesManager = () => {
       id: contact.id,
       name: contact.name,
       country: contact.country,
-      user: context.id
+      user: localStorage.getItem("id")
     };
 
     setEditFormData(formValues);
@@ -246,11 +223,27 @@ const UniversitiesManager = () => {
 
   const handleLogOutUniversities = () => {
       console.log('handle login')
-      setTriggerLogin(nanoid)
+      fetch(GlobalVariables.URL_BE + GlobalVariables.USER_RESOURCE + '/logout', {
+        method: 'POST',
+        headers: new Headers({
+          Authorization: "Bearer " + localStorage.getItem("userToken"),
+          Accept: 'application/json',
+         })
+       })
+       .then((response) => {
+          if(response.status >= 200 && response.status < 300){
+            localStorage.setItem("id", '')
+            localStorage.setItem("userToken", '')
+            setTriggerLogin(nanoid)
+          }else{
+            console.log('errore stato ' + response.status)
+          }
+       })
   }
-
   return (
-      context.userToken!== ''?
+    (localStorage.getItem("userToken") !== null
+    && localStorage.getItem("userToken") !== undefined  
+    && localStorage.getItem("userToken") !== '')?
       <div className="app-container">
         <button onClick={handleLogOutUniversities}>Log out</button>
         <form onSubmit={handleEditFormSubmit}>
@@ -284,7 +277,7 @@ const UniversitiesManager = () => {
           </table>
         </form>
 
-        <h2>Add an university</h2>
+        <h2>Add a university</h2>
         <form onSubmit={handleAddFormSubmit}>
           <input
             type="text"
